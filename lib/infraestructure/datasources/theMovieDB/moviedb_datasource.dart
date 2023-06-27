@@ -1,23 +1,14 @@
-import 'package:cinemapedia/config/constants/environment.dart';
+import 'package:cinemapedia/infraestructure/datasources/theMovieDB/constants.dart';
 import 'package:cinemapedia/infraestructure/mappers/movie_mapper.dart';
+import 'package:cinemapedia/infraestructure/models/moviedb/movie_details.dart';
 import 'package:cinemapedia/infraestructure/models/moviedb/moviedb_response.dart';
-import 'package:dio/dio.dart';
 
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 
 class MovieDbDatasource extends MoviesDataSource {
-  final dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://api.themoviedb.org/3',
-      queryParameters: {
-        'api_key': Environment.theMovieDbKey,
-        'language': 'es-MX'
-      }
-    )
-  );
-
-  List<Movie> _jsonToMoies( Map<String, dynamic> json ) {
+  
+  List<Movie> _jsonToMovies( Map<String, dynamic> json ) {
 
     final movieDBResponse = MovieDbResponse.fromJson(json);
 
@@ -39,7 +30,7 @@ class MovieDbDatasource extends MoviesDataSource {
       }
     );
 
-    return _jsonToMoies(response.data);
+    return _jsonToMovies(response.data);
   }
   
   @override
@@ -50,7 +41,7 @@ class MovieDbDatasource extends MoviesDataSource {
       }
     );
     
-    return _jsonToMoies(response.data);
+    return _jsonToMovies(response.data);
   }
   
   @override
@@ -61,7 +52,7 @@ class MovieDbDatasource extends MoviesDataSource {
       }
     );
     
-    return _jsonToMoies(response.data);
+    return _jsonToMovies(response.data);
   }
   
   @override
@@ -72,6 +63,19 @@ class MovieDbDatasource extends MoviesDataSource {
       }
     );
     
-    return _jsonToMoies(response.data);
+    return _jsonToMovies(response.data);
+  }
+  
+  @override
+  Future<Movie> getMovieById(String id) async {
+    final response = await dio.get('/movie/$id');
+
+    if ( response.statusCode != 200 ) throw Exception('Movue with id: $id not found');
+
+    final moviedbDetails = MovieDetails.fromJson( response.data );
+
+    final Movie movie = MovieMapper.movieDetailsToEntity(moviedbDetails);
+
+    return movie;
   }
 }
