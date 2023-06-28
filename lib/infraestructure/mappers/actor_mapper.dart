@@ -10,7 +10,7 @@ class ActorMapper {
       name: cast.name, 
       profilePath: cast.profilePath != null
         ? 'https://image.tmdb.org/t/p/w500${ cast.profilePath }'
-        : 'https://www.pngitem.com/pimgs/m/287-2876223_no-profile-picture-available-hd-png-download.png',
+        : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpWIUTEbl3Km2gu10Jsib39To4S4IYsn8QhA&usqp=CAU',
       character: cast.character,
     );
 }
